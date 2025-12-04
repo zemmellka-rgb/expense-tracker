@@ -11,27 +11,23 @@ export default function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    try {
-      const { description, amount } = JSON.parse(req.body);
+    const { description, amount } = req.body; // ✅ Already parsed by Vercel
 
-      if (!description || !amount) {
-        return res.status(400).json({ error: "description and amount required" });
-      }
-
-      const newExpense = {
-        id: expenses.length + 1,
-        description,
-        amount
-      };
-
-      expenses.push(newExpense);
-      return res.status(201).json(newExpense);
-    } catch (err) {
-      return res.status(400).json({ error: "Invalid JSON" });
+    if (!description || !amount) {
+      return res.status(400).json({ error: "description and amount required" });
     }
+
+    const newExpense = {
+      id: expenses.length + 1,
+      description,
+      amount: Number(amount)
+    };
+
+    expenses.push(newExpense);
+
+    return res.status(201).json(newExpense);
   }
 
-  // Other HTTP methods not allowed
   res.setHeader("Allow", ["GET", "POST"]);
   return res.status(405).end(`Method ${req.method} Not Allowed`);
 }
